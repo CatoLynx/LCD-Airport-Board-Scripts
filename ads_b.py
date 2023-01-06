@@ -30,9 +30,9 @@ def display_clear(board):
     board.update_blinkers()
 
 def display_header(board):
-    print("ID     FLIGHT   SQWK SPD HDG ALT   RATE   DIST  ")
+    print("ID     FLIGHT   SQWK SPD HDG ALT   RATE   DIST   RSSI ")
     print("-" * BOARD_COLS)
-    board.write_row(0, 0, 0, "ID     FLIGHT   SQWK SPD HDG ALT   RATE   DIST  ")
+    board.write_row(0, 0, 0, "ID     FLIGHT   SQWK SPD HDG ALT   RATE   DIST   RSSI ")
     board.write_row(0, 1, 0, "-" * BOARD_COLS)
 
 def display_aircraft(board, row, data):
@@ -52,10 +52,15 @@ def display_aircraft(board, row, data):
         distance = str(round(geopy.distance.geodesic((HOME_LAT, HOME_LON), (data['lat'], data['lon'])).m))
     else:
         distance = ""
-    
-    line = f"{icao_id: <6} {flight: <8} {squawk: <4} {airspeed: >3} {heading: >3} {altitude: >5} {vertical_speed: >5} {distance: >6}"
-    if line.strip() == "":
+
+    rssi = "{:.1f}".format(data['rssi']) if 'rssi' in data else "" # ft/min
+
+    # Check if any info besides ICAO ID and RSSI is present
+    test_line = f"{flight: <8} {squawk: <4} {airspeed: >3} {heading: >3} {altitude: >5} {vertical_speed: >5} {distance: >6}".strip()
+    if test_line == "":
         return False
+    
+    line = f"{icao_id: <6} {flight: <8} {squawk: <4} {airspeed: >3} {heading: >3} {altitude: >5} {vertical_speed: >5} {distance: >6} {rssi: >5}"
     
     print(line)
     board.write_row(0, row, 0, line)
@@ -65,7 +70,7 @@ def display_aircraft(board, row, data):
 def display_data(board, data):
     row = 2
     for aircraft in sorted(data['aircraft'], key=lambda ac: ac['hex']):
-        if row > BOARD_ROWS:
+        if row >= BOARD_ROWS:
             break
         if display_aircraft(board, row, aircraft):
             row += 1
