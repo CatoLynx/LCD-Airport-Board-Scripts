@@ -1,8 +1,6 @@
 import datetime
 
-from pyfis.aegmis import MIS1Board
 from pyfis.data_sources import FraportAPI
-from pyfis.utils import TcpSerialPort
 from unidecode import unidecode
 
 
@@ -102,10 +100,8 @@ def format_detail(flight):
     return "\n".join(lines)
 
 
-def main():
+def display_fra_arrivals(board):
     api = FraportAPI()
-    port = TcpSerialPort("192.168.0.222", 4223)
-    board = MIS1Board(port, start_address=1, num_rows=24, rows_per_gcu=8, baudrate=115200, debug=True)
     ts = datetime.datetime.utcnow() - datetime.timedelta(minutes=30)
 
     flights = []
@@ -139,7 +135,3 @@ def main():
         board.set_blinker(0, flight['status'] in landed_statuses)
         board.update_blinkers()
         #print(detail)
-
-
-if __name__ == "__main__":
-    main()
