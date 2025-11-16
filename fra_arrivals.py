@@ -11,7 +11,8 @@ MODE = "LIST"
 status_map = {
     #"": "UNTERWEGS",
     "Gepäckausgabe": "Gepaeck",
-    "Gepäckausgabe beendet": "Gepaeck Ende"
+    "Gepäckausgabe beendet": "Gepaeck Ende",
+    "verspäteter Abflug": "Versp. Abflug",
 }
 
 landed_statuses = [
@@ -36,6 +37,7 @@ def format_row(flight):
     sched_arr = flight['scheduled_arrival'].strftime('%H:%M') if flight['scheduled_arrival'] else ""
     est_arr = flight['estimated_arrival'].strftime('%H:%M') if flight['estimated_arrival'] else ""
     terminal = flight['terminal']
+    #print(flight['status'])
     status = prepare_text(status_map.get(flight['status'], flight['status']))
     return f"{fl_num_parts[0]:<3.3} {fl_num_parts[1]:<5.5} {ap_name:<20.20} {sched_arr:<5.5} {est_arr:<5.5} T{terminal:<1.1} {status:<14.14}"
 
